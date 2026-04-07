@@ -21,7 +21,12 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pyinstaller psutil pywin32 winotify
-          python -m pywin32_postinstall -install
+          $postinstall = Get-ChildItem -Recurse `
+            -Path "C:\hostedtoolcache\windows\Python\3.11.9\x64" `
+            -Filter "pywin32_postinstall.py" `
+            | Select-Object -First 1 -ExpandProperty FullName
+          Write-Host "Found postinstall at: $postinstall"
+          python $postinstall -install
 
       - name: Build EXE
         run: |
@@ -29,6 +34,7 @@ jobs:
           if (Test-Path "battery.ico") {
             $addData += " --add-data `"battery.ico;.`""
           }
+          Write-Host "Building with: $addData"
           pyinstaller --onefile --noconsole $addData battery_notifier.py
 
       - name: Upload EXE
