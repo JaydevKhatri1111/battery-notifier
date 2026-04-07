@@ -6,6 +6,8 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout
@@ -19,14 +21,20 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pyinstaller psutil pywin32 winotify
-          python -m pywin32_postinstall -install
+          python Scripts/pywin32_postinstall.py -install
+
+      - name: Check files present
+        run: |
+          echo "Files in repo root:"
+          Get-ChildItem -Name
 
       - name: Build EXE
         run: |
-          pyinstaller --onefile --noconsole `
-            --add-data "Alarm01.wav;." `
-            --add-data "battery.ico;." `
-            battery_notifier.py
+          $addData = "--add-data `"Alarm01.wav;.`""
+          if (Test-Path "battery.ico") {
+            $addData += " --add-data `"battery.ico;.`""
+          }
+          pyinstaller --onefile --noconsole $addData battery_notifier.py
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
