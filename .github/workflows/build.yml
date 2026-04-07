@@ -30,12 +30,11 @@ jobs:
 
       - name: Build EXE
         run: |
-          $addData = "--add-data `"Alarm01.wav;.`""
           if (Test-Path "battery.ico") {
-            $addData += " --add-data `"battery.ico;.`""
+            pyinstaller --onefile --noconsole --add-data "Alarm01.wav;." --add-data "battery.ico;." battery_notifier.py
+          } else {
+            pyinstaller --onefile --noconsole --add-data "Alarm01.wav;." battery_notifier.py
           }
-          Write-Host "Building with: $addData"
-          pyinstaller --onefile --noconsole $addData battery_notifier.py
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
