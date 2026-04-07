@@ -21,12 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pyinstaller psutil pywin32 winotify
-          python Scripts/pywin32_postinstall.py -install
-
-      - name: Check files present
-        run: |
-          echo "Files in repo root:"
-          Get-ChildItem -Name
+          python -m pywin32_postinstall -install
 
       - name: Build EXE
         run: |
